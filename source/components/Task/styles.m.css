@@ -3,7 +3,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 61px;
+    height: 70px;
+    max-height: 70px;
     margin-bottom: 13px;
     padding: 0 20px;
     background-color: var(--paletteColor2);
@@ -31,22 +32,34 @@
             margin-right: 1.9rem;
         }
 
-        & input[type='text'] {
+        & div {
             width: 100%;
-            border-color: transparent;
 
-            &:not([disabled]) {
-                border-color: var(--paletteColor3);
+            & input[type='text'] {
+                width: 100%;
+                border-color: transparent;
+
+                &:not([disabled]) {
+                    border-color: var(--paletteColor3);
+                }
             }
+
+            & span {
+                padding-left: 16px;
+            }
+
         }
     }
 
     & .actions {
+        display: flex;
+        align-items: center;
         & .setPriority,
         & .edit {
             margin-right: 20px;
         }
     }
+
 }
 
 .completed {
@@ -59,3 +72,4 @@
         }
     }
 }
+
