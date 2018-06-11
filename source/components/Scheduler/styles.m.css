@@ -44,9 +44,10 @@
                     background-color: var(--paletteColor3);
                     color: var(--paletteColor2);
                     border: 0;
-                        &:hover {
-                            background-color: var(--paletteColor11);
-                        }
+
+                    &:hover {
+                        background-color: var(--paletteColor11);
+                    }
                 }
             }
         }
@@ -182,6 +183,5 @@
     & .sortInEnd {
         transform: scale(1, -1);
         transition: 0.3s;
-  }
-
+    }
 }
