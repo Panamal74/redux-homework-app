@@ -1,6 +1,5 @@
 // Core
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 // Instruments
@@ -15,12 +14,6 @@ import Star from '../../theme/assets/Star';
 import Styles from './styles.m.css';
 
 export default class Task extends Component {
-    static propTypes = {
-        completed: PropTypes.bool.isRequired,
-        favorite:  PropTypes.bool.isRequired,
-        id:        PropTypes.string.isRequired,
-        message:   PropTypes.string.isRequired,
-    };
     constructor () {
         super();
         this.textInput = React.createRef();
@@ -91,9 +84,9 @@ export default class Task extends Component {
     }
 
     _removeTask () {
-        const { id, doRemoveTask } = this.props;
+        const { task, doRemoveTask } = this.props;
 
-        doRemoveTask(id);
+        doRemoveTask(task.get('id'));
     }
 
     _completeTask () {
@@ -131,17 +124,15 @@ export default class Task extends Component {
     }
 
     render () {
-        const {
-            message,
-            completed,
-            favorite,
-            id,
-            created,
-            modified,
-        } = this.props;
-        const {
-            disabled,
-        } = this.state;
+        const { task } = this.props;
+        const { disabled } = this.state;
+
+        const id = task.get('id');
+        const message = task.get('message');
+        const completed = task.get('completed');
+        const favorite = task.get('favorite');
+        const created = task.get('created');
+        const modified = task.get('modified');
 
         const taskStyle = classNames(Styles.task, { [Styles.completed]: completed });
 

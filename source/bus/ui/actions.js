@@ -8,12 +8,6 @@ export const uiActions = Object.freeze({
         error:   true,
         meta,
     }),
-    initialise: () => ({
-        type: types.INITIALISE,
-    }),
-    initialiseSuccess: () => ({
-        type: types.INITIALISE_SUCCESS,
-    }),
     setTasksFetchingState: (isTasksFetching) => ({
         type:    types.SET_TASKS_FETCHING_STATE,
         payload: isTasksFetching,

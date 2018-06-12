@@ -9,6 +9,7 @@ export function* callFetchTasksWorker () {
 
     try {
         yield put(uiActions.setTasksFetchingState(true));
+
         const response = yield call(fetch, url, {
             method:  'GET',
             headers: {
@@ -22,9 +23,10 @@ export function* callFetchTasksWorker () {
             throw new Error(message);
         }
 
-        yield put(tasksActions.fetchTasksSuccess(tasks));
+        yield put(tasksActions.fetchTasks(tasks));
     } catch (error) {
-        yield put(tasksActions.fetchTasksFail(error));
+        // yield put(tasksActions.fetchTasksFail(error));
+        yield put(uiActions.emitError(error, 'fetchTaskWorker'));
     } finally {
         yield put(uiActions.setTasksFetchingState(false));
     }

@@ -17,11 +17,11 @@ function compareItemsByDateDESC (a, b) {
 }
 
 export function getFilterTasks (searchValue = '', tasks = []) {
-    if (typeof searchValue !== "string") {
-        throw new Error("Первый аргумент функции должен иметь тип string");
-    } else if (!Array.isArray(tasks)) {
-        throw new Error("Второй аргумент функции должен иметь тип array");
-    }
+    // if (typeof searchValue !== "string") {
+    //     throw new Error("Первый аргумент функции должен иметь тип string");
+    // } else if (!Array.isArray(tasks)) {
+    //     throw new Error("Второй аргумент функции должен иметь тип array");
+    // }
 
     let returnValue = [];
 
@@ -37,9 +37,9 @@ export function getFilterTasks (searchValue = '', tasks = []) {
 }
 
 export function getFavoriteTasks (filterTasks = [], method = true) {
-    if (!Array.isArray(filterTasks)) {
-        throw new Error("Аргумент функции должен иметь тип array");
-    }
+    // if (!Array.isArray(filterTasks)) {
+    //     throw new Error("Аргумент функции должен иметь тип array");
+    // }
 
     return filterTasks.filter((value) =>
         value.favorite === true && value.completed === false
@@ -47,9 +47,9 @@ export function getFavoriteTasks (filterTasks = [], method = true) {
 }
 
 export function getCompletedFavoriteTasks (filterTasks = [], method = true) {
-    if (!Array.isArray(filterTasks)) {
-        throw new Error("Аргумент функции должен иметь тип array");
-    }
+    // if (!Array.isArray(filterTasks)) {
+    //     throw new Error("Аргумент функции должен иметь тип array");
+    // }
 
     return filterTasks.filter((value) =>
         value.completed === true && value.favorite === true
@@ -57,9 +57,9 @@ export function getCompletedFavoriteTasks (filterTasks = [], method = true) {
 }
 
 export function getCompletedOtherTasks (filterTasks = [], method = true) {
-    if (!Array.isArray(filterTasks)) {
-        throw new Error("Аргумент функции должен иметь тип array");
-    }
+    // if (!Array.isArray(filterTasks)) {
+    //     throw new Error("Аргумент функции должен иметь тип array");
+    // }
 
     return filterTasks.filter((value) =>
         value.completed === true && value.favorite === false
@@ -67,21 +67,21 @@ export function getCompletedOtherTasks (filterTasks = [], method = true) {
 }
 
 export function getOtherTasks (filterTasks = [], method = true) {
-    if (!Array.isArray(filterTasks)) {
-        throw new Error("Аргумент функции должен иметь тип array");
-    }
+    // if (!Array.isArray(filterTasks)) {
+    //     throw new Error("Аргумент функции должен иметь тип array");
+    // }
 
     return filterTasks.filter((value) =>
-        value.completed === false && value.favorite === false
+        value.get('completed') === false && value.get('favorite') === false
     ).sort(method ? compareItemsByDateASC : compareItemsByDateDESC);
 }
 
 export function checkFieldLength (value = '', maxLength = 50) {
-    if (typeof value !== "string") {
-        throw new Error("Первый аргумент функции должен иметь тип string");
-    } else if (typeof maxLength !== "number") {
-        throw new Error("Второй аргумент функции должен иметь тип number");
-    }
+    // if (typeof value !== "string") {
+    //     throw new Error("Первый аргумент функции должен иметь тип string");
+    // } else if (typeof maxLength !== "number") {
+    //     throw new Error("Второй аргумент функции должен иметь тип number");
+    // }
 
     return value.length > maxLength
         ? value.slice(0, maxLength)

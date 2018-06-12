@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import { url, token } from "../../config/api";
 
 // Instruments
@@ -11,12 +12,12 @@ import {
     getOtherTasks
 } from "../../instruments/helpers";
 
+
 export const withApi = (Enchanced) =>
     class WithApi extends Component {
 
         constructor () {
             super();
-            this.doFetchTasks = this._fetchTasks.bind(this);
             this.doCreateTask = this._createTask.bind(this);
             this.doRemoveTask = this._removeTask.bind(this);
             this.doChangeTask = this._changeTask.bind(this);
@@ -28,54 +29,11 @@ export const withApi = (Enchanced) =>
             tasks:           [],
         };
 
-        componentDidMount () {
-            const tasksValue = this.props.localStoreTasks;
-
-            if (tasksValue === null) {
-                this.doFetchTasks();
-            } else {
-                this._setStateForDidMount(tasksValue);
-            }
-        }
-
-        _setStateForDidMount (tasksValue) {
-            this.setState({ tasks: tasksValue });
-        }
-
         _setTasksFetchingState = (state) => {
             this.setState(() => ({
                 isTasksFetching: state,
             }));
         };
-
-        async _fetchTasks () {
-            this._setTasksFetchingState(true);
-            try {
-                const response = await fetch(url, {
-                    method:  'GET',
-                    headers: {
-                        Authorization:  token,
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (response.status !== 200) {
-                    throw new Error('Fetch task failed');
-                }
-
-                const { data } = await response.json();
-
-                this.setState({
-                    tasks: data,
-                });
-
-            } catch (error) {
-                console.error(error);
-            } finally {
-                localStorage.setItem('tasksSchedulerDefaultValue', JSON.stringify(this.state.tasks));
-                this._setTasksFetchingState(false);
-            }
-        }
 
         async _createTask (message) {
             this._setTasksFetchingState(true);

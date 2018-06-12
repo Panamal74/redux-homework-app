@@ -44,6 +44,7 @@
                     background-color: var(--paletteColor3);
                     color: var(--paletteColor2);
                     border: 0;
+                    cursor: pointer;
 
                     &:hover {
                         background-color: var(--paletteColor11);

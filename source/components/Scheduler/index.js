@@ -1,10 +1,15 @@
 // Core
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
 import { Transition } from 'react-transition-group';
 import FlipMove from 'react-flip-move';
 
 // Instruments
 import { withApi } from "../../components/HOC/withApi";
+import { tasksActionsAsync } from "../../bus/tasks/saga/asyncActions";
+// import { tasksActions } from "../../bus/tasks/actions";
 import Animation from './animation';
 
 // Style
@@ -16,6 +21,36 @@ import Task from '../../components/Task';
 import Spinner from '../../components/Spinner';
 import UpIcon from './image/arrow_upward.svg';
 
+
+const mapStateToProps = (state) => {
+    return {
+        //isTasksFetching: state.ui.get('isTasksFetching'),
+        tasks: state.tasks,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        actions: bindActionCreators(
+            {
+                fetchTasksAsync: tasksActionsAsync.fetchTaskAsync,
+                createTaskAsync: tasksActionsAsync.createTaskAsync,
+                removeTaskAsync: tasksActionsAsync.removeTaskAsync,
+                changeTaskAsync: tasksActionsAsync.changeTaskAsync,
+                // likeTaskAsync:       tasksActionsAsync.likeTaskAsync,
+                // unlikeTaskAsync:     tasksActionsAsync.unlikeTaskAsync,
+                // completeTaskAsync:   tasksActionsAsync.completeTaskAsync,
+                // uncompleteTaskAsync: tasksActionsAsync.uncompleteTaskAsync,
+            },
+            dispatch,
+        ),
+    };
+};
+
+@connect(
+    mapStateToProps,
+    mapDispatchToProps
+)
 class Scheduler extends Component {
     constructor () {
         super();
@@ -32,6 +67,13 @@ class Scheduler extends Component {
         compareMethod: true,
     };
 
+    componentDidMount () {
+        const { actions } = this.props;
+
+        actions.fetchTasksAsync();
+    }
+
+
     _handleChangeInputValue (event) {
         const { checkFieldLength } = this.props;
 
@@ -47,13 +89,13 @@ class Scheduler extends Component {
     }
 
     _handleSubmit (event) {
-        const { doCreateTask } = this.props;
+        const { actions } = this.props;
         const { inputValue } = this.state;
 
         event.preventDefault();
 
         if (inputValue.trim()) {
-            doCreateTask(inputValue);
+            actions.createTaskAsync(inputValue);
         }
         this.setState({ inputValue: '' });
     }
@@ -71,14 +113,14 @@ class Scheduler extends Component {
     };
 
     _getRenderTasks (showTasks) {
-        const { doChangeTask, doRemoveTask, checkFieldLength } = this.props;
+        const { actions, checkFieldLength } = this.props;
         const { duration } = this.state;
 
         return showTasks.map((value) => {
             return (
                 <Transition
                     appear
-                    key = { value.id }
+                    key = { value.get('id') }
                     timeout = { {
                         enter: duration * 1000,
                         exit:  duration * 1000,
@@ -86,10 +128,10 @@ class Scheduler extends Component {
                     onEnter = { this._handleTaskOpen }
                     onExit = { this._handleTaskClose }>
                     <Task
-                        { ...value }
                         checkFieldLength = { checkFieldLength }
-                        doChangeTask = { doChangeTask }
-                        doRemoveTask = { doRemoveTask }
+                        doChangeTask = { actions.changeTaskAsync }
+                        doRemoveTask = { actions.removeTaskAsync }
+                        task = { value }
                     />
                 </Transition>
             );
@@ -119,12 +161,12 @@ class Scheduler extends Component {
             compareMethod,
         } = this.state;
 
-        // const completeAll = tasks.every((value) => {
-        //     return value.completed === true;
-        // });
-        const completeAll = false;
+        const completeAll = tasks.every((value) => {
+            return value.completed === true;
+        });
 
         const showTasks = getFilterTasks(searchValue, tasks);
+
         const showAll = this.getRenderTasks(
             getFavoriteTasks(showTasks, compareMethod).concat(
                 getOtherTasks(showTasks, compareMethod),
@@ -132,6 +174,7 @@ class Scheduler extends Component {
                 getCompletedOtherTasks(showTasks, compareMethod)
             )
         );
+
 
         return (
             <div>
@@ -207,5 +250,6 @@ class Scheduler extends Component {
         );
     }
 }
+
 
 export default withApi(Scheduler);

@@ -12,7 +12,6 @@ const composeEnhancers = dev && devTools ? devTools : compose;
 const store = createStore(
     rootReducer,
     composeEnhancers(applyMiddleware(...middleware)),
-
 );
 
 export { store };
