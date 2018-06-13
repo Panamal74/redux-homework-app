@@ -1,5 +1,4 @@
 import { call, put } from 'redux-saga/effects';
-// import { call, put, select } from 'redux-saga/effects';
 
 import { url, token } from '../../../../config/api';
 import { tasksActions } from '../../../../bus/tasks/actions';
@@ -25,7 +24,6 @@ export function* callFetchTasksWorker () {
 
         yield put(tasksActions.fetchTasks(tasks));
     } catch (error) {
-        // yield put(tasksActions.fetchTasksFail(error));
         yield put(uiActions.emitError(error, 'fetchTaskWorker'));
     } finally {
         yield put(uiActions.setTasksFetchingState(false));

@@ -1,5 +1,5 @@
 // Core
-import { List, fromJS } from 'immutable';
+import { List, Map, fromJS } from 'immutable';
 // Instruments
 import { types } from "./types";
 
@@ -9,45 +9,18 @@ export const tasksReducer = (state = initialState, action) => {
     switch (action.type) {
         case types.FETCH_TASKS:
             return fromJS(action.payload);
-
         case types.CREATE_TASK:
             return state.unshift(fromJS(action.payload));
-
         case types.REMOVE_TASK:
             return state.filter((task) => task.get('id') !== action.payload);
-
-        // case types.LIKE_TASK:
-        //     return state.updateIn(
-        //         [
-        //             state.findIndex((task) => task.get('id') === action.payload),
-        //             'favorite'
-        //         ],
-        //         true
-        //     );
-        // case types.UNLIKE_TASK:
-        //     return state.updateIn(
-        //         [
-        //             state.findIndex((task) => task.get('id') === action.payload),
-        //             'favorite'
-        //         ],
-        //         false
-        //     );
-        // case types.COMPLETE_TASK:
-        //     return state.updateIn(
-        //         [
-        //             state.findIndex((task) => task.get('id') === action.payload),
-        //             'completed'
-        //         ],
-        //         true
-        //     );
-        // case types.UNCOMPLETE_TASK:
-        //     return state.updateIn(
-        //         [
-        //             state.findIndex((task) => task.get('id') === action.payload),
-        //             'completed'
-        //         ],
-        //         false
-        //     );
+        case types.CHANGE_TASK:
+            return state.map((task) =>
+                task.get('id') === action.payload[0].id
+                    ? Map(action.payload[0])
+                    : task
+            );
+        case types.COMPLETED_ALL:
+            return fromJS(action.payload);
         default: return state;
     }
 };

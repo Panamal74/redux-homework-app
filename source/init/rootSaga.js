@@ -9,6 +9,7 @@ export function* rootSaga () {
         tasksWatcher.watchFetchTasks(),
         tasksWatcher.watchCreateTask(),
         tasksWatcher.watchRemoveTask(),
-        tasksWatcher.watchChangeTask()
+        tasksWatcher.watchChangeTask(),
+        tasksWatcher.watchCompletedAll()
     ]);
 }

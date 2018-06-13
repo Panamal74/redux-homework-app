@@ -3,15 +3,15 @@ export function getDisplayName (WrappedComponent) {
 }
 
 function compareItemsByDateASC (a, b) {
-    const firstCompareElement = a.modified ? Date.parse(a.modified) : Date.parse(a.created);
-    const secondCompareElement = b.modified ? Date.parse(b.modified) : Date.parse(b.created);
+    const firstCompareElement = a.get('modified') ? Date.parse(a.get('modified')) : Date.parse(a.get('created'));
+    const secondCompareElement = b.get('modified') ? Date.parse(b.get('modified')) : Date.parse(b.get('created'));
 
     return secondCompareElement - firstCompareElement;
 }
 
 function compareItemsByDateDESC (a, b) {
-    const firstCompareElement = a.modified ? Date.parse(a.modified) : Date.parse(a.created);
-    const secondCompareElement = b.modified ? Date.parse(b.modified) : Date.parse(b.created);
+    const firstCompareElement = a.get('modified') ? Date.parse(a.get('modified')) : Date.parse(a.get('created'));
+    const secondCompareElement = b.get('modified') ? Date.parse(b.get('modified')) : Date.parse(b.get('created'));
 
     return firstCompareElement - secondCompareElement;
 }
@@ -27,7 +27,7 @@ export function getFilterTasks (searchValue = '', tasks = []) {
 
     if (searchValue) {
         returnValue = tasks.filter((value) =>
-            value.message.toUpperCase().indexOf(searchValue.toUpperCase()) !== -1
+            value.get('message').toUpperCase().indexOf(searchValue.toUpperCase()) !== -1
         );
     } else {
         returnValue = tasks;
@@ -42,7 +42,7 @@ export function getFavoriteTasks (filterTasks = [], method = true) {
     // }
 
     return filterTasks.filter((value) =>
-        value.favorite === true && value.completed === false
+        value.get('favorite') === true && value.get('completed') === false
     ).sort(method ? compareItemsByDateASC : compareItemsByDateDESC);
 }
 
@@ -52,7 +52,7 @@ export function getCompletedFavoriteTasks (filterTasks = [], method = true) {
     // }
 
     return filterTasks.filter((value) =>
-        value.completed === true && value.favorite === true
+        value.get('completed') === true && value.get('favorite') === true
     ).sort(method ? compareItemsByDateASC : compareItemsByDateDESC);
 }
 
@@ -62,7 +62,7 @@ export function getCompletedOtherTasks (filterTasks = [], method = true) {
     // }
 
     return filterTasks.filter((value) =>
-        value.completed === true && value.favorite === false
+        value.get('completed') === true && value.get('favorite') === false
     ).sort(method ? compareItemsByDateASC : compareItemsByDateDESC);
 }
 
@@ -76,14 +76,5 @@ export function getOtherTasks (filterTasks = [], method = true) {
     ).sort(method ? compareItemsByDateASC : compareItemsByDateDESC);
 }
 
-export function checkFieldLength (value = '', maxLength = 50) {
-    // if (typeof value !== "string") {
-    //     throw new Error("Первый аргумент функции должен иметь тип string");
-    // } else if (typeof maxLength !== "number") {
-    //     throw new Error("Второй аргумент функции должен иметь тип number");
-    // }
-
-    return value.length > maxLength
-        ? value.slice(0, maxLength)
-        : value;
-}
+export const validateLength = (text, maxLength) =>
+    text.length <= maxLength;

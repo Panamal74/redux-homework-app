@@ -1,4 +1,3 @@
-// import { call, put, select } from 'redux-saga/effects';
 import { call, put } from 'redux-saga/effects';
 
 import { url, token } from '../../../../config/api';
@@ -9,8 +8,6 @@ export function* callCreateTaskWorker ({ payload: taskMessage }) {
 
     try {
         yield put(uiActions.setTasksFetchingState(true));
-
-        // const token = yield select((state) => state.profile.get('token'));
 
         const response = yield call(fetch, url, {
             method:  'POST',

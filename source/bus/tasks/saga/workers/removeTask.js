@@ -9,8 +9,6 @@ export function* callRemoveTaskWorker ({ payload: id }) {
     try {
         yield put(uiActions.setTasksFetchingState(true));
 
-        // const token = yield select((state) => state.profile.get('token'));
-
         const response = yield call(fetch, `${url}/${id}`, {
             method:  'DELETE',
             headers: {

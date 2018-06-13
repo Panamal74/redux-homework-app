@@ -4,12 +4,10 @@ import { url, token } from '../../../../config/api';
 import { uiActions } from "../../../ui/actions";
 import { tasksActions } from '../../../../bus/tasks/actions';
 
-export function* callChangeTaskWorker ({ payload: id }) {
+export function* callChangeTaskWorker ({ payload: changeTask }) {
 
     try {
         yield put(uiActions.setTasksFetchingState(true));
-
-        // const token = yield select((state) => state.profile.get('token'));
 
         const response = yield call(fetch, url, {
             method:  'PUT',
@@ -17,18 +15,18 @@ export function* callChangeTaskWorker ({ payload: id }) {
                 Authorization:  token,
                 'Content-Type': 'application/json',
             },
-            // body!!!!!!!!!!!!
+            body: JSON.stringify([changeTask]),
         });
 
-        if (response.status !== 200) {
-            const { message } = yield call([response, response.json]);
+        const { data: task, message } = yield call([response, response.json]);
 
+        if (response.status !== 200) {
             throw new Error(message);
         }
 
-        yield put(tasksActions.likeTask(id));
+        yield put(tasksActions.changeTask(task));
     } catch (error) {
-        yield put(uiActions.emitError(error, 'likeTaskWorker'));
+        yield put(uiActions.emitError(error, 'changeTaskWorker'));
     } finally {
         yield put(uiActions.setTasksFetchingState(false));
     }

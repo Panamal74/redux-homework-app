@@ -2,15 +2,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import { Transition } from 'react-transition-group';
 import FlipMove from 'react-flip-move';
 
 // Instruments
-import { withApi } from "../../components/HOC/withApi";
 import { tasksActionsAsync } from "../../bus/tasks/saga/asyncActions";
-// import { tasksActions } from "../../bus/tasks/actions";
+import { uiActions } from "../../bus/ui/actions";
 import Animation from './animation';
+import {
+    validateLength,
+    getFilterTasks,
+    getFavoriteTasks,
+    getCompletedFavoriteTasks,
+    getCompletedOtherTasks,
+    getOtherTasks
+} from "../../instruments/helpers";
 
 // Style
 import Styles from './styles.m.css';
@@ -19,13 +25,16 @@ import Styles from './styles.m.css';
 import Checkbox from '../../theme/assets/Checkbox';
 import Task from '../../components/Task';
 import Spinner from '../../components/Spinner';
-import UpIcon from './image/arrow_upward.svg';
+import UpIcon from './image/arrow_upward.png';
 
 
 const mapStateToProps = (state) => {
     return {
-        //isTasksFetching: state.ui.get('isTasksFetching'),
-        tasks: state.tasks,
+        isTasksFetching: state.ui.get('isTasksFetching'),
+        searchValue:     state.ui.get('searchValue'),
+        compareMethod:   state.ui.get('compareMethod'),
+        duration:        state.ui.get('animationDuration'),
+        tasks:           state.tasks,
     };
 };
 
@@ -33,14 +42,14 @@ const mapDispatchToProps = (dispatch) => {
     return {
         actions: bindActionCreators(
             {
-                fetchTasksAsync: tasksActionsAsync.fetchTaskAsync,
-                createTaskAsync: tasksActionsAsync.createTaskAsync,
-                removeTaskAsync: tasksActionsAsync.removeTaskAsync,
-                changeTaskAsync: tasksActionsAsync.changeTaskAsync,
-                // likeTaskAsync:       tasksActionsAsync.likeTaskAsync,
-                // unlikeTaskAsync:     tasksActionsAsync.unlikeTaskAsync,
-                // completeTaskAsync:   tasksActionsAsync.completeTaskAsync,
-                // uncompleteTaskAsync: tasksActionsAsync.uncompleteTaskAsync,
+                fetchTasksAsync:   tasksActionsAsync.fetchTaskAsync,
+                createTaskAsync:   tasksActionsAsync.createTaskAsync,
+                removeTaskAsync:   tasksActionsAsync.removeTaskAsync,
+                changeTaskAsync:   tasksActionsAsync.changeTaskAsync,
+                completedAllAsync: tasksActionsAsync.completedAllAsync,
+                changeSearchValue: uiActions.setTasksSearch,
+                editButtonClick:   uiActions.setTaskEdit,
+                changeCompare:     uiActions.setCompareMethod,
             },
             dispatch,
         ),
@@ -51,20 +60,19 @@ const mapDispatchToProps = (dispatch) => {
     mapStateToProps,
     mapDispatchToProps
 )
-class Scheduler extends Component {
+export default class Scheduler extends Component {
     constructor () {
         super();
+        this.handleChangeSearchValue = this._handleChangeSearchValue.bind(this);
         this.handleChangeInputValue = this._handleChangeInputValue.bind(this);
         this.handleSubmit = this._handleSubmit.bind(this);
+        this.handleCompletedAllTasks = this._handleCompletedAllTasks.bind(this);
         this.handleInputKeyDown = this._handleInputKeyDown.bind(this);
         this.getRenderTasks = this._getRenderTasks.bind(this);
         this.handleCompare = this._handleCompare.bind(this);
     }
     state = {
-        inputValue:    '',
-        searchValue:   '',
-        duration:      0.3,
-        compareMethod: true,
+        inputValue: '',
     };
 
     componentDidMount () {
@@ -74,12 +82,20 @@ class Scheduler extends Component {
     }
 
 
-    _handleChangeInputValue (event) {
-        const { checkFieldLength } = this.props;
+    _handleChangeSearchValue (event) {
+        const { actions } = this.props;
 
-        this.setState({
-            [event.target.name]: checkFieldLength(event.target.value),
-        });
+        if (validateLength(event.target.value, 50)) {
+            actions.changeSearchValue(event.target.value);
+        }
+    }
+
+    _handleChangeInputValue (event) {
+        if (validateLength(event.target.value, 50)) {
+            this.setState({
+                inputValue: event.target.value,
+            });
+        }
     }
 
     _handleInputKeyDown (event) {
@@ -100,21 +116,26 @@ class Scheduler extends Component {
         this.setState({ inputValue: '' });
     }
 
+    _handleCompletedAllTasks () {
+        const { actions, tasks } = this.props;
+
+        actions.completedAllAsync(tasks);
+    }
+
     _handleTaskOpen = (task) => {
-        const { duration } = this.state;
+        const { duration } = this.props;
 
         Animation.open(task, duration);
     };
 
     _handleTaskClose = (task) => {
-        const { duration } = this.state;
+        const { duration } = this.props;
 
         Animation.close(task, duration);
     };
 
     _getRenderTasks (showTasks) {
-        const { actions, checkFieldLength } = this.props;
-        const { duration } = this.state;
+        const { actions, duration } = this.props;
 
         return showTasks.map((value) => {
             return (
@@ -128,10 +149,11 @@ class Scheduler extends Component {
                     onEnter = { this._handleTaskOpen }
                     onExit = { this._handleTaskClose }>
                     <Task
-                        checkFieldLength = { checkFieldLength }
                         doChangeTask = { actions.changeTaskAsync }
+                        doEditTask = { actions.editButtonClick }
                         doRemoveTask = { actions.removeTaskAsync }
                         task = { value }
+                        validateLength = { validateLength }
                     />
                 </Transition>
             );
@@ -139,30 +161,24 @@ class Scheduler extends Component {
     }
 
     _handleCompare () {
-        const { compareMethod } = this.state;
+        const { compareMethod, actions } = this.props;
 
-        this.setState({ compareMethod: !compareMethod });
+        actions.changeCompare(!compareMethod);
     }
 
     render () {
         const {
             tasks,
             isTasksFetching,
-            doCompleteAll,
-            getFilterTasks,
-            getFavoriteTasks,
-            getCompletedFavoriteTasks,
-            getCompletedOtherTasks,
-            getOtherTasks,
+            searchValue,
+            compareMethod,
         } = this.props;
         const {
             inputValue,
-            searchValue,
-            compareMethod,
         } = this.state;
 
         const completeAll = tasks.every((value) => {
-            return value.completed === true;
+            return value.get('completed') === true;
         });
 
         const showTasks = getFilterTasks(searchValue, tasks);
@@ -175,10 +191,9 @@ class Scheduler extends Component {
             )
         );
 
-
         return (
             <div>
-                <Spinner isSpinning = { isTasksFetching } />
+                <Spinner spin = { isTasksFetching } />
                 <section className = { Styles.scheduler }>
                     <main>
                         <header>
@@ -189,10 +204,11 @@ class Scheduler extends Component {
                                     placeholder = 'Поиск'
                                     type = 'text'
                                     value = { searchValue }
-                                    onChange = { this.handleChangeInputValue }
+                                    onChange = { this.handleChangeSearchValue }
                                 />
                                 <button
                                     id = 'sortButton'
+                                    title = { compareMethod ? 'От поздних к ранним' : 'От ранних к поздним' }
                                     onClick = { this.handleCompare }>
                                     <img
                                         alt = 'sort'
@@ -205,6 +221,7 @@ class Scheduler extends Component {
                         <section>
                             <form>
                                 <input
+                                    autoFocus
                                     name = 'inputValue'
                                     placeholder = 'Описание моей новой задачи'
                                     type = 'text'
@@ -233,13 +250,13 @@ class Scheduler extends Component {
                                 color2 = '#FFF'
                                 onClick = {
                                     !completeAll
-                                        ? doCompleteAll
+                                        ? this.handleCompletedAllTasks
                                         : null
                                 }
                             />
                             <span className = { Styles.completeAllTasks }>
                                 { completeAll
-                                    ? `Павел Анатольевич, все Ваши задачи выполнены!!!`
+                                    ? `Jin says: "All your tasks are fulfilled, sir!"`
                                     : `Выполнить все задачи`
                                 }
                             </span>
@@ -250,6 +267,3 @@ class Scheduler extends Component {
         );
     }
 }
-
-
-export default withApi(Scheduler);

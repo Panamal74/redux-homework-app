@@ -16,20 +16,8 @@ export const tasksActionsAsync = Object.freeze({
         type:    asyncTypes.CHANGE_TASK_ASYNC,
         payload: task,
     }),
-    // likeTaskAsync: (id) => ({
-    //     type:    asyncTypes.LIKE_TASK_ASYNC,
-    //     payload: id,
-    // }),
-    // unlikeTaskAsync: (id) => ({
-    //     type:    asyncTypes.UNLIKE_TASK_ASYNC,
-    //     payload: id,
-    // }),
-    // completeTaskAsync: (id) => ({
-    //     type:    asyncTypes.COMPLETE_TASK_ASYNC,
-    //     payload: id,
-    // }),
-    // uncompleteTaskAsync: (id) => ({
-    //     type:    asyncTypes.UNCOMPLETE_TASK_ASYNC,
-    //     payload: id,
-    // }),
+    completedAllAsync: (tasks) => ({
+        type:    asyncTypes.COMPLETED_ALL_ASYNC,
+        payload: tasks,
+    }),
 });
