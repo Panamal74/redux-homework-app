@@ -109,7 +109,6 @@ export default class Scheduler extends Component {
         const { inputValue } = this.state;
 
         event.preventDefault();
-
         if (inputValue.trim()) {
             actions.createTaskAsync(inputValue);
         }
