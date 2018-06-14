@@ -12,7 +12,7 @@ import {
 const defaultTasks = List([
     Map({
         id:        '11111',
-        message:   'Успешно пройти React-интенсив компании Lectrum',
+        message:   'Успешно пройти Redux-интенсив компании Lectrum',
         completed: true,
         favorite:  true,
         created:   '2018-02-01T15:44:34.624Z',
