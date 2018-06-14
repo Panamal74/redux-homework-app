@@ -1,7 +1,6 @@
 // Core
 import React, { Component } from 'react';
 import classNames from 'classnames';
-import { connect } from 'react-redux';
 
 // Components
 import Checkbox from '../../theme/assets/Checkbox';
@@ -12,13 +11,6 @@ import Star from '../../theme/assets/Star';
 // Style
 import Styles from './styles.m.css';
 
-const mapStateToProps = (state) => {
-    return {
-        taskEdit: state.ui.get('taskEdit'),
-    };
-};
-
-@connect(mapStateToProps)
 export default class Task extends Component {
     constructor () {
         super();
@@ -172,7 +164,6 @@ export default class Task extends Component {
                         className = { Styles.setPriority }
                         color1 = '#3B8EF3'
                         color2 = '#000'
-                        name = 'Star'
                         onClick = { this.favoriteButtonClick }
                     />
                     <Edit

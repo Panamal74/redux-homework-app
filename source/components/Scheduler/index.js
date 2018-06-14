@@ -29,13 +29,13 @@ import Spinner from '../../components/Spinner';
 import Input from '../Input';
 import UpIcon from './image/arrow_upward.png';
 
-
 const mapStateToProps = (state) => {
     return {
         isTasksFetching: state.ui.get('isTasksFetching'),
         searchValue:     state.ui.get('searchValue'),
         compareMethod:   state.ui.get('compareMethod'),
         duration:        state.ui.get('animationDuration'),
+        taskEdit:        state.ui.get('taskEdit'),
         tasks:           state.tasks,
     };
 };
@@ -116,7 +116,7 @@ export default class Scheduler extends Component {
     };
 
     _getRenderTasks (showTasks) {
-        const { actions, duration } = this.props;
+        const { actions, duration, taskEdit } = this.props;
 
         return showTasks.map((value) => {
             return (
@@ -134,6 +134,7 @@ export default class Scheduler extends Component {
                         doEditTask = { actions.editButtonClick }
                         doRemoveTask = { actions.removeTaskAsync }
                         task = { value }
+                        taskEdit = { taskEdit }
                         validateLength = { validateLength }
                     />
                 </Transition>
