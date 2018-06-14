@@ -78,3 +78,6 @@ export function getOtherTasks (filterTasks = [], method = true) {
 
 export const validateLength = (text, maxLength) =>
     text.length <= maxLength;
+
+// export const validateLength = (text, minLength, maxLength) =>
+//     !text || text.length < minLength || text.length > maxLength;

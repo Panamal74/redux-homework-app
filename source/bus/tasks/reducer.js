@@ -20,7 +20,11 @@ export const tasksReducer = (state = initialState, action) => {
                     : task
             );
         case types.COMPLETED_ALL:
-            return fromJS(action.payload);
+            return state.map((task) => {
+                const newValue = action.payload.filter((value) => value.id === task.get('id'));
+
+                return newValue.length > 0 ? fromJS(newValue[0]) : task;
+            });
         default: return state;
     }
 };

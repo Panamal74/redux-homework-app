@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Transition } from 'react-transition-group';
-import FlipMove from 'react-flip-move';
+import { Form, Errors, actions as formActions } from 'react-redux-form';
 
 // Instruments
 import { tasksActionsAsync } from "../../bus/tasks/saga/asyncActions";
@@ -17,6 +17,7 @@ import {
     getCompletedOtherTasks,
     getOtherTasks
 } from "../../instruments/helpers";
+import FlipMove from 'react-flip-move';
 
 // Style
 import Styles from './styles.m.css';
@@ -25,6 +26,7 @@ import Styles from './styles.m.css';
 import Checkbox from '../../theme/assets/Checkbox';
 import Task from '../../components/Task';
 import Spinner from '../../components/Spinner';
+import Input from '../Input';
 import UpIcon from './image/arrow_upward.png';
 
 
@@ -50,6 +52,7 @@ const mapDispatchToProps = (dispatch) => {
                 changeSearchValue: uiActions.setTasksSearch,
                 editButtonClick:   uiActions.setTaskEdit,
                 changeCompare:     uiActions.setCompareMethod,
+                resetForm:         formActions.reset,
             },
             dispatch,
         ),
@@ -64,16 +67,11 @@ export default class Scheduler extends Component {
     constructor () {
         super();
         this.handleChangeSearchValue = this._handleChangeSearchValue.bind(this);
-        this.handleChangeInputValue = this._handleChangeInputValue.bind(this);
         this.handleSubmit = this._handleSubmit.bind(this);
         this.handleCompletedAllTasks = this._handleCompletedAllTasks.bind(this);
-        this.handleInputKeyDown = this._handleInputKeyDown.bind(this);
         this.getRenderTasks = this._getRenderTasks.bind(this);
         this.handleCompare = this._handleCompare.bind(this);
     }
-    state = {
-        inputValue: '',
-    };
 
     componentDidMount () {
         const { actions } = this.props;
@@ -90,29 +88,13 @@ export default class Scheduler extends Component {
         }
     }
 
-    _handleChangeInputValue (event) {
-        if (validateLength(event.target.value, 50)) {
-            this.setState({
-                inputValue: event.target.value,
-            });
-        }
-    }
-
-    _handleInputKeyDown (event) {
-        if (event.keyCode === 13) {
-            this.handleSubmit(event);
-        }
-    }
-
-    _handleSubmit (event) {
+    _handleSubmit (inputValue) {
         const { actions } = this.props;
-        const { inputValue } = this.state;
 
-        event.preventDefault();
-        if (inputValue.trim()) {
-            actions.createTaskAsync(inputValue);
+        if (inputValue.newTaskValue.trim()) {
+            actions.createTaskAsync(inputValue.newTaskValue);
+            actions.resetForm('forms.newTask');
         }
-        this.setState({ inputValue: '' });
     }
 
     _handleCompletedAllTasks () {
@@ -172,9 +154,6 @@ export default class Scheduler extends Component {
             searchValue,
             compareMethod,
         } = this.props;
-        const {
-            inputValue,
-        } = this.state;
 
         const completeAll = tasks.every((value) => {
             return value.get('completed') === true;
@@ -218,20 +197,34 @@ export default class Scheduler extends Component {
                             </div>
                         </header>
                         <section>
-                            <form>
-                                <input
-                                    autoFocus
-                                    name = 'inputValue'
+                            <Form
+                                className = { Styles.Form }
+                                model = 'forms.newTask'
+                                onSubmit = { this.handleSubmit }>
+                                <Errors
+                                    messages = { {
+                                        valid: () =>
+                                            `Описание новой задачи должно быть длинной не более 50 символов`,
+                                    } }
+                                    model = 'forms.newTask.newTaskValue'
+                                    show = { ({ submitFailed, touched, errors }) =>
+                                        submitFailed || touched && errors.valid
+                                    }
+                                />
+                                <Input
+                                    errors = { {
+                                        valid: (newTaskValue) => !validateLength(newTaskValue, 50),
+                                    } }
+                                    errorstyle = { Styles.error }
+                                    id = 'forms.newTask.newTaskValue'
+                                    model = 'forms.newTask.newTaskValue'
                                     placeholder = 'Описание моей новой задачи'
                                     type = 'text'
-                                    value = { inputValue }
-                                    onChange = { this.handleChangeInputValue }
-                                    onKeyDown = { this.handleInputKeyDown }
                                 />
-                                <button onClick = { this.handleSubmit }>
+                                <button type = 'submit'>
                                     Добавить задачу
                                 </button>
-                            </form>
+                            </Form>
                             <div className = { Styles.overlay }>
                                 <FlipMove
                                     duration = { 300 }

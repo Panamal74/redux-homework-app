@@ -14,11 +14,9 @@ export function* callCompletedAllWorker ({ payload: allTasks }) {
                 Authorization:  token,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(allTasks.toJS().map((value) => {
-                value.completed = true;
-
-                return value;
-            })),
+            body: JSON.stringify(allTasks.filter((item) => item.get('completed') === false).map((item) =>
+                item.set('completed', true)
+            )),
         });
 
         const { data: tasks, message } = yield call([response, response.json]);

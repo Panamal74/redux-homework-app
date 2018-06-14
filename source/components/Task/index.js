@@ -11,6 +11,7 @@ import Star from '../../theme/assets/Star';
 
 // Style
 import Styles from './styles.m.css';
+//import {validateLength} from "../../instruments/helpers";
 
 const mapStateToProps = (state) => {
     return {
@@ -58,24 +59,25 @@ export default class Task extends Component {
     }
 
     _inputKeyDown (event) {
-        const { task, doChangeTask, doEditTask } = this.props;
+        const { task, doChangeTask, doEditTask, validateLength } = this.props;
         const id = task.get('id');
         const message = task.get('message');
         const completed = task.get('completed');
         const favorite = task.get('favorite');
+        const newMessage = event.target.value;
 
         if (event.keyCode === 13) {
-            if (event.target.value !== message) {
-                if (event.target.value.trim().length > 0) {
+            if (newMessage !== message) {
+                if (newMessage.trim().length > 0 && validateLength(newMessage, 50)) {
                     doChangeTask({
                         id,
-                        "message": event.target.value,
+                        "message": newMessage,
                         completed,
                         favorite,
                     });
                     doEditTask('');
                 } else {
-                    event.target.value = '';
+                    event.target.value = newMessage.slice(0, 50);
                 }
             } else {
                 doEditTask('');
