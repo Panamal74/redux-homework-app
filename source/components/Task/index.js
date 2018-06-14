@@ -11,7 +11,6 @@ import Star from '../../theme/assets/Star';
 
 // Style
 import Styles from './styles.m.css';
-//import {validateLength} from "../../instruments/helpers";
 
 const mapStateToProps = (state) => {
     return {
@@ -77,7 +76,7 @@ export default class Task extends Component {
                     });
                     doEditTask('');
                 } else {
-                    event.target.value = newMessage.slice(0, 50);
+                    event.target.value = newMessage.slice(0, 50).trim();
                 }
             } else {
                 doEditTask('');
@@ -89,10 +88,13 @@ export default class Task extends Component {
     }
 
     _removeTask () {
-        const { task, doRemoveTask, doEditTask } = this.props;
+        const { task, doRemoveTask, doEditTask, taskEdit } = this.props;
+        const id = task.get('id');
 
-        doRemoveTask(task.get('id'));
-        doEditTask('');
+        doRemoveTask(id);
+        if (id === taskEdit) {
+            doEditTask('');
+        }
     }
 
     _completeTask () {
@@ -149,6 +151,7 @@ export default class Task extends Component {
                         className = { Styles.complete }
                         color1 = '#3B8EF3'
                         color2 = '#FFF'
+                        name = 'completed'
                         onClick = { this.completeCheckboxClick }
                     />
                     <div>
@@ -169,6 +172,7 @@ export default class Task extends Component {
                         className = { Styles.setPriority }
                         color1 = '#3B8EF3'
                         color2 = '#000'
+                        name = 'Star'
                         onClick = { this.favoriteButtonClick }
                     />
                     <Edit

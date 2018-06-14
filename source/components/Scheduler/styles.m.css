@@ -84,38 +84,6 @@
         & section {
             margin-bottom: 31px;
 
-            & form {
-                display: flex;
-                justify-content: space-between;
-                margin: 0 0 13px;
-
-                & input[type='text'] {
-                    width: 100%;
-                    margin-right: 22px;
-                }
-
-                & button {
-                    min-width: 215px;
-                    height: 42px;
-                    border-radius: 5px;
-                    background-color: var(--paletteColor3);
-                    font-size: 18px;
-                    padding-left: 25px;
-                    color: var(--paletteColor2);
-                    border: 0;
-                    cursor: pointer;
-                    background-image: url('../../theme/assets/plus-icon.svg');
-                    background-repeat: no-repeat;
-                    background-size: 18px 18px;
-                    background-position: 6% 50%;
-                    transition: background-color 0.3s ease-in-out;
-
-                    &:hover {
-                        background-color: var(--paletteColor11);
-                    }
-                }
-            }
-
             & Form {
                 display: flex;
                 justify-content: space-between;
@@ -191,8 +159,8 @@
             }
 
             & ul {
-                min-height: 430px;
-                max-height: 430px;
+                min-height: 432px;
+                max-height: 432px;
                 overflow: scroll;
             }
         }

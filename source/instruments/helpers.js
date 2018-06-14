@@ -1,3 +1,5 @@
+import { List, isImmutable } from 'immutable';
+
 export function getDisplayName (WrappedComponent) {
     return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 }
@@ -16,12 +18,12 @@ function compareItemsByDateDESC (a, b) {
     return firstCompareElement - secondCompareElement;
 }
 
-export function getFilterTasks (searchValue = '', tasks = []) {
-    // if (typeof searchValue !== "string") {
-    //     throw new Error("Первый аргумент функции должен иметь тип string");
-    // } else if (!Array.isArray(tasks)) {
-    //     throw new Error("Второй аргумент функции должен иметь тип array");
-    // }
+export function getFilterTasks (searchValue = '', tasks = List()) {
+    if (typeof searchValue !== "string") {
+        throw new Error("Первый аргумент функции должен иметь тип string");
+    } else if (!isImmutable(tasks)) {
+        throw new Error("Второй аргумент функции должен быть Immutable");
+    }
 
     let returnValue = [];
 
@@ -36,48 +38,45 @@ export function getFilterTasks (searchValue = '', tasks = []) {
     return returnValue;
 }
 
-export function getFavoriteTasks (filterTasks = [], method = true) {
-    // if (!Array.isArray(filterTasks)) {
-    //     throw new Error("Аргумент функции должен иметь тип array");
-    // }
+export function getFavoriteTasks (filterTasks = List(), method = true) {
+    if (!isImmutable(filterTasks)) {
+        throw new Error("Аргумент функции должен быть Immutable");
+    }
 
     return filterTasks.filter((value) =>
         value.get('favorite') === true && value.get('completed') === false
     ).sort(method ? compareItemsByDateASC : compareItemsByDateDESC);
 }
 
-export function getCompletedFavoriteTasks (filterTasks = [], method = true) {
-    // if (!Array.isArray(filterTasks)) {
-    //     throw new Error("Аргумент функции должен иметь тип array");
-    // }
+export function getCompletedFavoriteTasks (filterTasks = List(), method = true) {
+    if (!isImmutable(filterTasks)) {
+        throw new Error("Аргумент функции должен быть Immutable");
+    }
 
     return filterTasks.filter((value) =>
         value.get('completed') === true && value.get('favorite') === true
     ).sort(method ? compareItemsByDateASC : compareItemsByDateDESC);
 }
 
-export function getCompletedOtherTasks (filterTasks = [], method = true) {
-    // if (!Array.isArray(filterTasks)) {
-    //     throw new Error("Аргумент функции должен иметь тип array");
-    // }
+export function getCompletedOtherTasks (filterTasks = List(), method = true) {
+    if (!isImmutable(filterTasks)) {
+        throw new Error("Аргумент функции должен быть Immutable");
+    }
 
     return filterTasks.filter((value) =>
         value.get('completed') === true && value.get('favorite') === false
     ).sort(method ? compareItemsByDateASC : compareItemsByDateDESC);
 }
 
-export function getOtherTasks (filterTasks = [], method = true) {
-    // if (!Array.isArray(filterTasks)) {
-    //     throw new Error("Аргумент функции должен иметь тип array");
-    // }
+export function getOtherTasks (filterTasks = List(), method = true) {
+    if (!isImmutable(filterTasks)) {
+        throw new Error("Аргумент функции должен быть Immutable");
+    }
 
     return filterTasks.filter((value) =>
         value.get('completed') === false && value.get('favorite') === false
     ).sort(method ? compareItemsByDateASC : compareItemsByDateDESC);
 }
 
-export const validateLength = (text, maxLength) =>
+export const validateLength = (text = '', maxLength = 50) =>
     text.length <= maxLength;
-
-// export const validateLength = (text, minLength, maxLength) =>
-//     !text || text.length < minLength || text.length > maxLength;
