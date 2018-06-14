@@ -6,9 +6,7 @@ import {
     getFavoriteTasks,
     getCompletedFavoriteTasks,
     getCompletedOtherTasks,
-    getOtherTasks,
-    compareItemsByDateASC,
-    compareItemsByDateDESC
+    getOtherTasks
 } from './helpers';
 
 const defaultTasks = List([
